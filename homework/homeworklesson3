@@ -1,0 +1,113 @@
+1. BULK INSERT Products
+FROM 'C:\data\products.csv'
+WITH (
+    FIELDTERMINATOR = ',',   -- ustunlar vergul bilan ajratilgan
+    ROWTERMINATOR = '\n',    -- qatorlar yangi satr bilan ajratilgan
+    FIRSTROW = 2             -- sarlavha qatori tashlab ketiladi
+);
+2. CSV – eng ko‘p ishlatiladigan, vergul bilan ajratilgan fayl.
+
+TXT – oddiy matn fayli, separator sifatida probel, tab yoki boshqa belgi ishlatilishi mumkin.
+
+XML – tuzilgan (structured) format, odatda murakkab ma’lumotlar uchun.
+
+JSON – zamonaviy format, veb-ilovalardan keladigan ma’lumotlarni import qilishda ishlatiladi.
+3. CREATE TABLE Products (
+    ProductID INT PRIMARY KEY,     -- har bir mahsulotga unikal raqam
+    ProductName VARCHAR(50),       -- mahsulot nomi, matn
+    Price DECIMAL(10,2)            -- mahsulot narxi, 10 ta raqam, 2 ta kasr qismi
+);
+4. INSERT INTO Products (ProductID, ProductName, Price)
+VALUES (1, 'Laptop', 1200.00);   -- Laptop narxi 1200
+
+INSERT INTO Products (ProductID, ProductName, Price)
+VALUES (2, 'Phone', 800.00);     -- Telefon narxi 800
+
+INSERT INTO Products (ProductID, ProductName, Price)
+VALUES (3, 'Book', 15.50);       -- Kitob narxi 15.50
+5. NULL → qiymat yo‘q, noma’lum. Masalan, mahsulotning narxi hali belgilanmagan bo‘lsa.
+NOT NULL → qiymat kiritilishi shart. Masalan, ProductName bo‘sh bo‘lishi mumkin emas.
+ProductName VARCHAR(50) NOT NULL,   -- nomi bo‘lishi shart
+Description VARCHAR(200) NULL       -- izoh bo‘lishi mumkin, bo‘lmasligi ham mumkin
+7. ALTER TABLE Products
+ADD CONSTRAINT UQ_ProductName UNIQUE (ProductName);
+8. ALTER TABLE Products
+ADD CategoryID INT;
+9. CREATE TABLE Categories (
+    CategoryID INT PRIMARY KEY,         -- unikal kategoriya raqami
+    CategoryName VARCHAR(50) UNIQUE     -- nomi, qaytarilmaydi
+);
+10. Ta’rifi: SQL Server’da IDENTITY ustuni avtomatik raqam beradi.
+Sintaksis: IDENTITY( boshlanish, qadam )
+Masalan, IDENTITY(1,1) → 1 dan boshlanadi, har safar +1 bo‘ladi.
+IDENTITY(100,5) → 100 dan boshlanadi, keyin 105, 110, 115 …
+CREATE TABLE Employees (
+    EmpID INT IDENTITY(1,1) PRIMARY KEY,  -- 1, 2, 3... avtomatik
+    EmpName VARCHAR(50)
+);
+11. BULK INSERT Products
+FROM 'C:\data\products.txt'
+WITH (
+    FIELDTERMINATOR = ',',   -- ustunlar vergul bilan ajratilgan
+    ROWTERMINATOR = '\n',    -- qatorlar yangi satr bilan ajratilgan
+    FIRSTROW = 1             -- agar birinchi qatorda ham data bo‘lsa
+);
+12. ALTER TABLE Products
+ADD CONSTRAINT FK_Products_Categories
+FOREIGN KEY (CategoryID) REFERENCES Categories(CategoryID);
+13. PRIMARY KEY
+Har bir qatorni bir xil bo‘lmagan qiymat bilan aniqlaydi.
+Bitta jadvalda faqat bitta PRIMARY KEY bo‘lishi mumkin.
+NULL qiymat qabul qilmaydi.
+UNIQUE KEY
+Ustun qiymatlarining takrorlanishiga yo‘l qo‘ymaydi.
+Jadvalda bir nechta UNIQUE KEY bo‘lishi mumkin.
+Bitta NULL qiymatga ruxsat beradi (SQL Server’da).
+👉 Demak, PRIMARY KEY – asosiy identifikator, UNIQUE KEY esa qo‘shimcha “takrorlanmaslik” nazorati.
+  14. ALTER TABLE Products
+ADD CONSTRAINT CHK_Price CHECK (Price > 0);
+15. ALTER TABLE Products
+ADD Stock INT NOT NULL DEFAULT 0;
+16. SELECT ProductID, ProductName, ISNULL(Price, 0) AS Price
+FROM Products;
+UPDATE Products
+SET Price = ISNULL(Price, 0);
+17. Nega kerak? Jadvaldagi ma’lumotlar o‘rtasida bog‘liqlik va ma’lumot yaxlitligini saqlash uchun.
+Masalan:
+Products jadvalidagi CategoryID faqat Categories jadvalidagi mavjud ID’lar bilan mos kelishi kerak.
+Bu bog‘lanmagan mahsulot yoki noto‘g‘ri kategoriya yozilishidan himoya qiladi.
+Qachon ishlatiladi? Ko‘p jadval bo‘lgan ma’lumotlar bazasida 1:N yoki M:N munosabatlarni o‘rnatishda.
+18. CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(50) NOT NULL,
+    Age INT CHECK (Age >= 18)   -- Yosh 18 dan kichik bo‘lishi mumkin emas
+);
+19. CREATE TABLE SampleTable (
+    ID INT IDENTITY(100,10) PRIMARY KEY,  -- 100, 110, 120, ...
+    Data VARCHAR(50)
+);
+20. CREATE TABLE OrderDetails (
+    OrderID INT,
+    ProductID INT,
+    Quantity INT,
+    PRIMARY KEY (OrderID, ProductID)   -- Composite Primary Key
+);
+21. SELECT ISNULL(NULL, 0);  -- Natija: 0
+  SELECT COALESCE(NULL, NULL, 5, 10);  -- Natija: 5
+22. CREATE TABLE Employees (
+    EmpID INT PRIMARY KEY,              -- Asosiy kalit
+    Name VARCHAR(50),
+    Email VARCHAR(100) UNIQUE           -- Takrorlanmas Email
+);
+23. CREATE TABLE Customers (
+    CustomerID INT PRIMARY KEY,
+    Name VARCHAR(50)
+);
+
+CREATE TABLE Orders (
+    OrderID INT PRIMARY KEY,
+    CustomerID INT,
+    FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
