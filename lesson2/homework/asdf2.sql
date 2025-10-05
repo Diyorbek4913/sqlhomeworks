@@ -1,12 +1,15 @@
+1. Create a table Employees with columns: EmpID INT, Name (VARCHAR(50)), and Salary (DECIMAL(10,2)).
 CREATE TABLE Employees (
     EmpID INT,
     Name VARCHAR(50),
     Salary DECIMAL(10,2)
 );
+2. Insert three records into the Employees table using different INSERT INTO approaches (single-row insert and multiple-row insert)
 INSERT INTO Employees (EmpID, Name, Salary)
 VALUES (1, 'Ali', 5000.00);
 INSERT INTO Employees
 VALUES (2, 'Laylo', 6000.00);
+3. Update the Salary of an employee to 7000 where EmpID = 1
 INSERT INTO Employees (EmpID, Name, Salary)
 VALUES 
 (3, 'Jasur', 5500.00),
